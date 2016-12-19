@@ -1,11 +1,19 @@
 package main
 import (
+  "encoding/json"
   "fmt"
   "net/http"
   "os"
   "github.com/russross/blackfriday"
   "github.com/julienschmidt/httprouter"
 )
+
+type Book struct {
+  Title string `json:"title"`
+  Author string `json:"author"`
+}
+
+
 func main() {
   port := os.Getenv("PORT")
   if port == "" {
@@ -22,10 +30,26 @@ func main() {
   r.PUT("/posts/:id", PostUpdateHandler)
   r.GET("/posts/:id/edit", PostEditHandler)
 
+  r.HandlerFunc("GET", "/showbooks" , ShowBooks)
+
   r.HandlerFunc("POST", "/markdown", GenerateMarkdown)
+
   r.Handler("GET", "/", http.FileServer(http.Dir("public")))
+
   http.ListenAndServe(":"+port, r)
 }
+
+func ShowBooks(w http.ResponseWriter, r *http.Request) {
+  book := Book{"Building Web Apps with Go", "Jeremy Saenz"}
+  js, err := json.Marshal(book)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+  w.Header().Set("Content-Type", "application/json")
+  w.Write(js)
+}
+
 
 func GenerateMarkdown(rw http.ResponseWriter, r *http.Request) {
   markdown := blackfriday.MarkdownCommon([]byte(r.FormValue("body")))

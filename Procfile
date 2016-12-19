@@ -1,1 +1,1 @@
-web: go-sample
+web: fileserver

@@ -4,6 +4,11 @@
 	"GodepVersion": "v75",
 	"Deps": [
 		{
+			"ImportPath": "github.com/julienschmidt/httprouter",
+			"Comment": "v1.1-40-g5dd70ee",
+			"Rev": "5dd70ee059943e81987a817fa1a755b11dd119c1"
+		},
+		{
 			"ImportPath": "github.com/russross/blackfriday",
 			"Comment": "v1.4-40-g5f33e7b",
 			"Rev": "5f33e7b7878355cd2b7e6b8eefc48a5472c69f70"

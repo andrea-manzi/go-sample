@@ -9,6 +9,11 @@
 			"Rev": "5dd70ee059943e81987a817fa1a755b11dd119c1"
 		},
 		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.2.0-10-g2d44dec",
+			"Rev": "2d44decb4941c9cdf72c22297b7890faf7da9bcb"
+		},
+		{
 			"ImportPath": "github.com/russross/blackfriday",
 			"Comment": "v1.4-40-g5f33e7b",
 			"Rev": "5f33e7b7878355cd2b7e6b8eefc48a5472c69f70"
@@ -16,6 +21,10 @@
 		{
 			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
 			"Rev": "1dba4b3954bc059efc3991ec364f9f9a35f597d2"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "45e771701b814666a7eb299e6c7a57d0b1799e91"
 		}
 	]
 }

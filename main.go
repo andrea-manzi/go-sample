@@ -1,6 +1,7 @@
 package main
 import (
-  "encoding/json"
+  "database/sql"
+  _ "github.com/mattn/go-sqlite3"
   "fmt"
   "net/http"
   "os"
@@ -8,17 +9,15 @@ import (
   "github.com/julienschmidt/httprouter"
 )
 
-type Book struct {
-  Title string `json:"title"`
-  Author string `json:"author"`
-}
-
 
 func main() {
   port := os.Getenv("PORT")
   if port == "" {
     port = "8080"
   }
+
+  db := NewDB()
+
 
   r := httprouter.New()
   //r.GET("/", HomeHandler)
@@ -30,7 +29,7 @@ func main() {
   r.PUT("/posts/:id", PostUpdateHandler)
   r.GET("/posts/:id/edit", PostEditHandler)
 
-  r.HandlerFunc("GET", "/showbooks" , ShowBooks)
+  r.Handler("GET", "/showbooks" ,  ShowBooks(db))
 
   r.HandlerFunc("POST", "/markdown", GenerateMarkdown)
 
@@ -39,16 +38,33 @@ func main() {
   http.ListenAndServe(":"+port, r)
 }
 
-func ShowBooks(w http.ResponseWriter, r *http.Request) {
-  book := Book{"Building Web Apps with Go", "Jeremy Saenz"}
-  js, err := json.Marshal(book)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-  w.Header().Set("Content-Type", "application/json")
-  w.Write(js)
+
+func ShowBooks(db *sql.DB) http.Handler {
+  return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+    var title, author string
+    err := db.QueryRow("select title, author from books").Scan(&title, &author)
+    if err != nil {
+      //insert object first
+      stmt, _ := db.Prepare("INSERT INTO books  VALUES(?,?)")
+      stmt.Exec("test","Andrea")
+      db.QueryRow("select title, author from books").Scan(&title, &author)
+    }
+    fmt.Fprintf(rw, "The first book is '%s' by '%s'", title, author)
+  })
 }
+
+func NewDB() *sql.DB {
+  db, err := sql.Open("sqlite3", "example.sqlite")
+  if err != nil {
+  panic(err)
+  }
+  _, err = db.Exec("create table if not exists books(title text, author text)")
+  if err != nil {
+    panic(err)
+  }
+  return db
+}
+
 
 
 func GenerateMarkdown(rw http.ResponseWriter, r *http.Request) {
